@@ -1,38 +1,44 @@
+import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
-public class loginPage {
-    private WebDriver driver;
+import static com.codeborne.selenide.Selenide.$;
+import static java.lang.String.format;
+import static org.openqa.selenium.By.xpath;
 
-    public loginPage(WebDriver driver) {
-        this.driver = driver;
-    }
+public class loginPage {
 
     private By loginField = By.cssSelector("input#txtLogin");
     private By passwordField = By.cssSelector("input#txtPassword");
     private By loginButton = By.xpath("//div[@id='btnLoginStandard']");
-    private By errorText = By.xpath("//div[@id='errMessage']");
+    private String errorText = "//div[@id=\"errMessage\" and contains(text(), \"Ошибка аутентификации.\")]";
+
+    public loginPage open() {
+        Selenide.open("https://online.mkb.ru/");
+        return this;
+    }
 
     public loginPage typeLogIn(String login) {
-        driver.findElement(loginField).sendKeys(login);
+        $(loginField).setValue(login);
         return this;
     }
     public loginPage typePassword(String password) {
-        driver.findElement(passwordField).sendKeys(password);
+        $(passwordField).setValue(password);
         return this;
     }
     public loginPage clickLogIn() {
-        driver.findElement(loginButton).click();
+        $(loginButton).click();
         return this;
     }
     public loginPage unableToLogin(String login, String password) {
         this.typeLogIn(login);
         this.typePassword(password);
-        return new loginPage(driver);
+        return new loginPage();
     }
 
-    public String getErrorText() {
-        return driver.findElement(errorText).getText();
+    public SelenideElement getErrorText() {
+        return $(xpath(errorText));
     }
 
 }
